@@ -20,6 +20,10 @@ start_link(Type, Opts) ->
 init({simple, Opts}) ->
     {ok, #{
         opts => Opts
+    }};
+init({connected, Opts}) ->
+    {ok, #{
+        opts => Opts
     }}.
 
 handle_call({send, Data}, _From, #{ opts := Opts } = State) ->
