@@ -10,9 +10,9 @@
 %% @end
 
 send(Host, Port, Data, Type = tcpv4) ->
-    send(Host, Port, Data, _Type = tcpv4, 5000).
+    send(Host, Port, Data, Type = tcpv4, 5000).
 
-send(Host, Port, Data, _Type = tcpv4, Timeout) ->
+send(Host, Port, Data, Type = tcpv4, Timeout) ->
     spawn_link(fun() ->
         poolboy:transaction(edc_sup:pool_name(Host, Port, Type), fun(Worker) ->
             gen_server:call(Worker, {send, Data}, Timeout)
