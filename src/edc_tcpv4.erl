@@ -87,7 +87,7 @@ handle_call({send, Data}, _From,
 handle_call({send, Data}, _From, 
         #{ socket := Socket } = State) ->
     io:format("[~p] ~p send ~p\n", [?MODULE, self(), Data]),
-    timer:sleep(5000),
+    % timer:sleep(5000),
     {Reply, NewSocket} = case gen_tcp:send(Socket, Data) of
         ok ->
             {ok, Socket};
