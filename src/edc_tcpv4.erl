@@ -73,7 +73,7 @@ handle_call({send, Data}, _From,
         #{ socket := undefined,
            connect_opts := ConnectOpts,
            socket_opts := SocketOpts } = State) ->
-    io:format("[~p] ~p send ~p\n", [?MODULE, self(), Data]),
+    edc_log:log(debug, "[~p] ~p send ~p\n", [?MODULE, self(), Data]),
     % timer:sleep(5000),
     {Reply, Socket} = case connect(ConnectOpts, SocketOpts) of
         {ok, NewSocket} ->
@@ -86,7 +86,7 @@ handle_call({send, Data}, _From,
 % send - socket fine - send will check socket state
 handle_call({send, Data}, _From, 
         #{ socket := Socket } = State) ->
-    io:format("[~p] ~p send ~p\n", [?MODULE, self(), Data]),
+    edc_log:log(debug, "[~p] ~p send ~p\n", [?MODULE, self(), Data]),
     % timer:sleep(5000),
     {Reply, NewSocket} = case gen_tcp:send(Socket, Data) of
         ok ->
@@ -105,7 +105,7 @@ handle_cast(_Msg, State) ->
 handle_info({tcp_closed, Socket}, #{ socket := Socket } = State) ->
     {noreply, State#{ socket := undefined }};
 handle_info(Info, State) ->
-    io:format("[~p] handle_info ~p state ~p\n", [?MODULE, Info, State]),
+    edc_log:log(warning, "[~p] handle_info ~p state ~p\n", [?MODULE, Info, State]),
     {noreply, State}.
 
 terminate(_Reason, _State) ->
