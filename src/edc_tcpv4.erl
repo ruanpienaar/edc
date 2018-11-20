@@ -56,6 +56,8 @@ init({ConnectOpts, SocketOpts}) ->
             {ok, NewSocket} ->
                 NewSocket;
             {error, Reason} ->
+                edc_log:log(warning, "[~p] init connect failed, Reason ~p\nDetails ~p ~p\n",
+                    [?MODULE, Reason, ConnectOpts, SocketOpts]),
                 % TODO: log the reason
                 % TODO: do we remove a client that cannot connect ?
                 %       or just simply increase the waiting time ?
