@@ -1,6 +1,6 @@
 {application, edc,
  [
-  {description, ""},
+  {description, "Erlang sending data client"},
   {vsn, "1"},
   {registered, []},
   {applications, [
