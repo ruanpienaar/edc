@@ -125,7 +125,7 @@ terminate(_Reason, #{
         host := Host,
         port := Port,
         ref := Ref
-        } = State) ->
+        } = _State) ->
     true = ets:delete(connection_table, {tcpv4, Host, Port, Ref}),
     ok.
 
