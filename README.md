@@ -1,8 +1,8 @@
 ## Synopsis
 
-Erlang Data Client
-
-Collection of Erlang clients for sending data
+Erlang Data Client/Connector
+Collection of Erlang client types for connecting and sending data.
+This repo focusses on the sending of data.
 
 * TCP/IP V4
 * TCP/IP v6 ( TODO )

@@ -8,7 +8,15 @@
 ]).
 
 -behaviour(gen_server).
--export([init/1, handle_call/3, handle_cast/2, handle_info/2, terminate/2, code_change/3]).
+
+-export([
+    init/1,
+    handle_call/3,
+    handle_cast/2,
+    handle_info/2,
+    terminate/2,
+    code_change/3
+]).
 
 %% @doc simple tries to conenct and send, on each call.
 %%      connected keeps the connection open, with heartbeats checking for dead peers.
@@ -51,7 +59,7 @@ init({ConnectOpts, SocketOpts}) ->
     {port, Port} = lists:keyfind(port, 1, ConnectOpts),
     Ref = erlang:make_ref(),
     true = ets:insert(connection_table, _Entry={_Key={tcpv4, Host, Port, Ref}, self()}),
-    Socket = 
+    Socket =
         case connect(ConnectOpts, SocketOpts) of
             {ok, NewSocket} ->
                 NewSocket;
@@ -67,11 +75,14 @@ init({ConnectOpts, SocketOpts}) ->
     {ok, #{
         socket => Socket,
         connect_opts => ConnectOpts,
-        socket_opts => SocketOpts
+        socket_opts => SocketOpts,
+        host => Host,
+        port => Port,
+        ref => Ref
     }}.
 
 % send - but socket failed - so reconnect
-handle_call({send, Data}, _From, 
+handle_call({send, Data}, _From,
         #{ socket := undefined,
            connect_opts := ConnectOpts,
            socket_opts := SocketOpts } = State) ->
@@ -86,7 +97,7 @@ handle_call({send, Data}, _From,
     end,
     {reply, Reply, State#{ socket => Socket }};
 % send - socket fine - send will check socket state
-handle_call({send, Data}, _From, 
+handle_call({send, Data}, _From,
         #{ socket := Socket } = State) ->
     edc_log:log(debug, "[~p] ~p send ~p\n", [?MODULE, self(), Data]),
     % timer:sleep(5000),
@@ -110,7 +121,12 @@ handle_info(Info, State) ->
     edc_log:log(warning, "[~p] handle_info ~p state ~p\n", [?MODULE, Info, State]),
     {noreply, State}.
 
-terminate(_Reason, _State) ->
+terminate(_Reason, #{
+        host := Host,
+        port := Port,
+        ref := Ref
+        } = State) ->
+    true = ets:delete(connection_table, {tcpv4, Host, Port, Ref}),
     ok.
 
 code_change(_OldVsn, State, _Extra) ->

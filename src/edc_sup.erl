@@ -9,11 +9,7 @@
     tcpv4_child_spec/2
 ]).
 
-%% Supervisor callbacks
 -export([init/1]).
-
-%% Helper macro for declaring children of supervisor
--define(CHILD(I, Mod, Type, Args), {I, {Mod, start_link, Args}, permanent, 5000, Type, [I]}).
 
 -include("edc.hrl").
 
@@ -55,8 +51,8 @@ tcpv4_child_spec(Type, ClientOpts) ->
 
 init([]) ->
     StartupClients = application:get_env(edc, startup_clients, []),
-    ChildSpecs = 
-        lists:foldl(fun({_Client, ClientOpts}, Acc) -> 
+    ChildSpecs =
+        lists:foldl(fun({_Client, ClientOpts}, Acc) ->
             case lists:keyfind(type, 1, ClientOpts) of
                 {type, Type = ?TCPV4} ->
                     [ tcpv4_child_spec(Type, ClientOpts) | Acc ];
@@ -65,4 +61,3 @@ init([]) ->
             end
         end, [], StartupClients),
     {ok, { {one_for_one, 5, 10}, ChildSpecs} }.
-
